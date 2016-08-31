@@ -123,7 +123,7 @@ try:
     import psycopg2
     import psycopg2.extras
     import pipes
-    import subprocess 
+    import subprocess
     import os
 
 except ImportError:
@@ -234,8 +234,8 @@ def db_matches(cursor, db, owner, template, encoding, lc_collate, lc_ctype):
             return True
 
 def db_dump(module, target, db=None, host=None, user=None, port=None):
-    if db: 
-      flags = ' --dbname={0}'.format(pipes.quote(db)) 
+    if db:
+      flags = ' --dbname={0}'.format(pipes.quote(db))
     if host:
       flags += ' --host={0}'.format(pipes.quote(host))
     if port:
@@ -244,7 +244,7 @@ def db_dump(module, target, db=None, host=None, user=None, port=None):
       flags += ' --username={0}'.format(pipes.quote(user))
 
     cmd = module.get_bin_path('pg_dump', True)
-    comp_prog_path = None 
+    comp_prog_path = None
 
     if os.path.splitext(target)[-1] == '.tar':
         flags += ' --format=t'
@@ -258,21 +258,21 @@ def db_dump(module, target, db=None, host=None, user=None, port=None):
     elif os.path.splitext(target)[-1] == '.xz':
       comp_prog_path = module.get_bin_path('xz', True)
 
-    cmd += flags 
+    cmd += flags
 
     if comp_prog_path:
       cmd = '{0}|{1} > {2}'.format(cmd, comp_prog_path, pipes.quote(target))
     else:
       cmd = '{0} > {1}'.format(cmd, pipes.quote(target))
-    
-     
+
+
     rc, stderr, stdout = module.run_command(cmd, use_unsafe_shell=True)
     return rc, stderr, stdout
 
 def db_import(module, target, db=None, host=None, user=None, port=None):
     # set initial flags. These are the same in pg_restore as psql
     flags = []
-    if db: 
+    if db:
       flags.append(' --dbname={0} '.format(pipes.quote(db)))
     if host:
       flags.append('--host={0} '.format(host))
@@ -280,7 +280,7 @@ def db_import(module, target, db=None, host=None, user=None, port=None):
       flags.append('--port={0} '.format(port))
     if user:
       flags.append('--username={0} '.format(user))
-    
+
     comp_prog_path = None
     cmd = module.get_bin_path('psql', True)
 
@@ -290,17 +290,17 @@ def db_import(module, target, db=None, host=None, user=None, port=None):
     elif os.path.splitext(target)[-1] == '.tar':
         flags.append('--format=Tar {0}'.format(target))
         comp_prog_path = [module.get_bin_path('pg_restore', True)]
-   
+
     elif os.path.splitext(target)[-1] == '.gz':
-        comp_prog_path = module.get_bin_path('zcat', True)     
+        comp_prog_path = module.get_bin_path('zcat', True)
 
     elif os.path.splitext(target)[-1] == '.xz':
-        comp_prog_path = module.get_bin_path('xzcat', True)     
+        comp_prog_path = module.get_bin_path('xzcat', True)
 
     cmd += flags[0]
 
     if comp_prog_path:
-      p1 = subprocess.Popen([comp_prog_path, target], stdout=subprocess.PIPE, stderr=subprocess.PIPE) 
+      p1 = subprocess.Popen([comp_prog_path, target], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
       p2 = subprocess.Popen(cmd, stdin=p1.stdout, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
       (stdout2, stderr2) = p2.communicate()
       p1.stdout.close()
@@ -309,7 +309,7 @@ def db_import(module, target, db=None, host=None, user=None, port=None):
         stderr1 = p1.stderr.read()
         return p1.returncode, '', stderr1
       else:
-        return p2.returncode, '', stderr2 
+        return p2.returncode, '', stderr2
     else:
       cmd = '{0} < {1}'.format(cmd, pipes.quote(target))
 
@@ -422,7 +422,7 @@ def main():
 
         elif state == "dump":
             try:
-                changed = db_dump(module, target, db, **kw)           
+                changed = db_dump(module, target, db, **kw)
 
             except Exception:
                 e = get_exception()
