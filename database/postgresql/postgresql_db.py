@@ -88,10 +88,14 @@ options:
     backup:
       - Back up to a destination, requires target as well. Supported formats are
         .gz, .tar, .bz, .xz, and .sql
-   restore:
-     - Restore from a destination. See backup for supported options
-   target: 
-     - File to back up or restore from.
+  restore:
+    version_added: "2.2"
+    description:
+      - Restore from a destination. See backup for supported options
+  target:
+    version_added: "2.2"
+    description:
+      - File to back up or restore from.
 
 notes:
    - The default authentication assumes that you are either logging in as or sudo'ing to the C(postgres) account on the host.
