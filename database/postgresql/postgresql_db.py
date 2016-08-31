@@ -233,7 +233,16 @@ def db_matches(cursor, db, owner, template, encoding, lc_collate, lc_ctype):
         else:
             return True
 
-def db_dump(module, target, db=None, host=None, user=None, port=None):
+def db_dump(module, target,
+            db=None, host=None,
+            user=None, port=None,
+            password=None):
+
+    if password:
+          raise NotSupportedError(
+            'password not supported for pg_dump'
+          )
+
     if db:
       flags = ' --dbname={0}'.format(pipes.quote(db))
     if host:
@@ -269,8 +278,17 @@ def db_dump(module, target, db=None, host=None, user=None, port=None):
     rc, stderr, stdout = module.run_command(cmd, use_unsafe_shell=True)
     return rc, stderr, stdout
 
-def db_import(module, target, db=None, host=None, user=None, port=None):
+def db_import(module, target,
+              db=None, host=None,
+              user=None, port=None,
+              password=None):
     # set initial flags. These are the same in pg_restore as psql
+
+    if password:
+          raise NotSupportedError(
+            'password not supported for pg_restore'
+          )
+
     flags = []
     if db:
       flags.append(' --dbname={0} '.format(pipes.quote(db)))
